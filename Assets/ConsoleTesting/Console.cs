@@ -25,6 +25,7 @@ namespace ConsoleTesting
                 {
                     consoleActive = true;
                     UpdateConsoleActive();
+                    inputField.text = "/";
                 }
             }
 
@@ -39,7 +40,6 @@ namespace ConsoleTesting
                 if (consoleActive)
                 {
                     RunCommand(inputField.text);
-                    inputField.text = "";
                     consoleActive = false;
                     UpdateConsoleActive();
                 }
@@ -55,6 +55,10 @@ namespace ConsoleTesting
             if (consoleActive)
             {
                 inputField.ActivateInputField();
+            }
+            else
+            {
+                inputField.text = "";
             }
         }
 
