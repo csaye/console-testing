@@ -7,8 +7,13 @@ namespace ConsoleTesting
     public class Console : MonoBehaviour
     {
         [Header("References")]
+        public GameObject messagePrefab;
         public CanvasGroup canvasGroup;
         public TMP_InputField inputField;
+        public RectTransform content;
+
+        private float messageCount;
+        private float maxMessages = 30;
 
         private bool consoleActive;
 
@@ -66,7 +71,7 @@ namespace ConsoleTesting
         {
             if (!command.StartsWith("/"))
             {
-                Debug.LogError("Command " + command + " does not start with slash.");
+                Output(command);
                 return;
             }
 
@@ -84,18 +89,32 @@ namespace ConsoleTesting
             switch (primaryPhrase)
             {
                 case "say":
-                    if (command.Contains(" ")) Debug.Log(command.Substring(command.IndexOf(" ")));
+                    if (command.Contains(" ")) Output(command.Substring(command.IndexOf(" ")));
                     break;
                 case "shout":
-                    if (command.Contains(" ")) Debug.Log(command.Substring(command.IndexOf(" ")).ToUpper());
+                    if (command.Contains(" ")) Output(command.Substring(command.IndexOf(" ")).ToUpper());
                     break;
                 case "double":
-                    if (command.Contains(" ")) try { Debug.Log(2 * Int32.Parse(command.Substring(command.IndexOf(" ")))); } catch { Debug.LogError(command.Substring(command.IndexOf(" ")) + " is an invalid number."); }
+                    if (command.Contains(" ")) try { Output((2 * Int32.Parse(command.Substring(command.IndexOf(" ")))).ToString()); } catch { Output(command.Substring(command.IndexOf(" ")) + " is an invalid number."); }
                     break;
                 default:
-                    Debug.LogError("Command " + primaryPhrase + " not found.");
+                    Output("Command " + primaryPhrase + " not found.");
                     break;
             }
+        }
+
+        private void Output(string message)
+        {
+            messageCount++;
+
+            // If number of messages exceeds max count, destroy oldest message
+            if (messageCount > maxMessages)
+            {
+                Destroy(content.GetChild(0).gameObject);
+            }
+
+            GameObject output = Instantiate(messagePrefab, content);
+            output.GetComponent<TextMeshProUGUI>().text = message;
         }
     }
 }
