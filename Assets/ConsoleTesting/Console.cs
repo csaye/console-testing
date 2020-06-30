@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -8,9 +10,12 @@ namespace ConsoleTesting
     {
         [Header("References")]
         public GameObject messagePrefab;
+        public GameObject lastMessage;
         public CanvasGroup canvasGroup;
         public TMP_InputField inputField;
         public RectTransform content;
+
+        private float fadeLastMessageTime = 3;
 
         private float messageCount;
         private float maxMessages = 30;
@@ -56,6 +61,8 @@ namespace ConsoleTesting
             canvasGroup.alpha = consoleActive ? 1 : 0;
             canvasGroup.interactable = consoleActive;
             canvasGroup.blocksRaycasts = consoleActive;
+
+            lastMessage.GetComponent<CanvasGroup>().alpha = consoleActive ? 0 : 1;
 
             if (consoleActive)
             {
@@ -113,8 +120,23 @@ namespace ConsoleTesting
                 Destroy(content.GetChild(0).gameObject);
             }
 
+            lastMessage.GetComponent<TextMeshProUGUI>().text = message;
+            StartCoroutine(FadeLastMessage());
+
             GameObject output = Instantiate(messagePrefab, content);
             output.GetComponent<TextMeshProUGUI>().text = message;
+        }
+
+        private IEnumerator FadeLastMessage()
+        {
+            CanvasGroup c = lastMessage.GetComponent<CanvasGroup>();
+
+            yield return new WaitForSeconds(fadeLastMessageTime - 1);
+            for (int i = 9; i >= 0; i--)
+            {
+                yield return new WaitForSeconds(0.1f);
+                c.alpha = i / 10.0f;
+            }
         }
     }
 }
